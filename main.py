@@ -1,8 +1,3 @@
-import capture
-import scrape
-import categorize
-import clean
-import tab
 import os
 
 def cls():
@@ -59,18 +54,30 @@ def main():
             break
         elif ch == '1':
             cls()
+            import capture
             print("Starting capture...")
             capture.run()
             input("Press any key to continue.\n")
+
+            import scrape
             print("Starting scraping...")
             scrape.run()
+            print("Scraping completed.")
             input("Press any key to continue.\n")
+
+            import categorize
             print("Starting categorization...")
             categorize.run()
+            print("Categorization completed.")
             input("Press any key to continue.\n")
+
+            import clean
             print("Starting cleaning...")
             clean.run()
+            print("Cleaning completed.")
             input("Press any key to continue.\n")
+
+            import tab
             print("Starting tabulation...")
             tab.run()
             input("Press any key to continue.\n")

@@ -37,7 +37,7 @@ def start_capture(duration_seconds=None):
 
             while True:
                 if duration_seconds and (datetime.now() - start_time).total_seconds() > duration_seconds:
-                    print(f"\nCapture time limit reached ({duration_seconds} seconds). Stopping capture.")
+                    print(f"\nCapture time limit reached ({duration_seconds} seconds). \nStopping capture...")
                     break
 
                 ready, _, _ = select.select([proc.stdout], [], [], 1.0)
@@ -56,7 +56,6 @@ def start_capture(duration_seconds=None):
         except KeyboardInterrupt:
             print("\nCapture stopped by user.")
         finally:
-            print("Stopping capture...")
             proc.terminate()
 
 def main():
@@ -65,7 +64,7 @@ def main():
         sys.exit(1)
 
     try:
-        duration = int(input("Enter capture duration in seconds (0 for unlimited): "))
+        duration = int(input("Enter capture duration in seconds (preferably 300 atleast): "))
         duration = None if duration == 0 else duration
     except ValueError:
         duration = None

@@ -4,6 +4,13 @@ capture_file = 'data/captured.csv'
 scraped_file = 'data/scraped_data.csv'
 output_file = 'data/categorized_data.csv'
 
+search = ['google', 'bing', 'yahoo']
+social = ['facebook', 'twitter', 'instagram', 'reddit']
+video = ['youtube', 'vimeo', 'dailymotion']
+learning = ['udemy', 'coursera', 'khanacademy', 'code']
+ads = ['doubleclick', 'adnxs', 'criteo', 'taboola', 'pubmatic', 'ads']
+shopping = ['amazon', 'flipkart', 'ebay']
+
 scraped_info = {}
 with open(scraped_file, 'r', encoding='utf-8') as file:
     reader = csv.DictReader(file)
@@ -16,17 +23,17 @@ def categorize(title, domain):
     title = title.lower()
     domain = domain.lower()
 
-    if any(x in domain for x in ['google', 'bing', 'yahoo']):
+    if any(x in domain for x in search):
         return 'Search Engine'
-    elif any(x in domain for x in ['facebook', 'twitter', 'instagram', 'reddit']):
+    elif any(x in domain for x in social):
         return 'Social Media'
-    elif 'youtube' in domain or 'video' in title:
+    elif any(x in domain for x in video):
         return 'Video Platform'
-    elif 'udemy' in domain or 'coursera' in domain or 'khanacademy' in domain:
+    elif any(x in title for x in learning):
         return 'Online Learning'
-    elif any(x in title for x in ['analytics', 'ads', 'advertising']):
+    elif any(x in title for x in ads):
         return 'Ad/Tracking'
-    elif 'amazon' in domain or 'flipkart' in domain:
+    elif any(x in domain for x in shopping):
         return 'E-commerce'
     else:
         return 'Other'
