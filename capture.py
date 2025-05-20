@@ -56,9 +56,10 @@ def start_capture(duration_seconds=None):
         except KeyboardInterrupt:
             print("\nCapture stopped by user.")
         finally:
+            print("Stopping capture...")
             proc.terminate()
 
-if __name__ == "__main__":
+def main():
     if os.geteuid() != 0:
         print("Run this script with sudo.")
         sys.exit(1)
@@ -70,3 +71,9 @@ if __name__ == "__main__":
         duration = None
 
     start_capture(duration_seconds=duration)
+
+if __name__ == "__main__":
+    main()
+
+def run():
+    main()

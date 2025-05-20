@@ -1,7 +1,9 @@
 import csv
 from tabulate import tabulate
 
-def display_cleaned_data(file_path='data/cleaned_merged.csv'):
+file_path = 'data/cleaned_merged.csv'
+
+def main():
     rows = []
     with open(file_path, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
@@ -17,4 +19,7 @@ def display_cleaned_data(file_path='data/cleaned_merged.csv'):
     print(tabulate(rows, headers=headers, tablefmt='fancy_grid'))
 
 if __name__ == "__main__":
-    display_cleaned_data()
+    main()
+
+def run():
+    main()

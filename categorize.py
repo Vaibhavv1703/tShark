@@ -31,23 +31,30 @@ def categorize(title, domain):
     else:
         return 'Other'
 
-with open(capture_file, 'r', encoding='utf-8') as infile, \
-     open(output_file, 'w', newline='', encoding='utf-8') as outfile:
+def main():
+    with open(capture_file, 'r', encoding='utf-8') as infile, \
+         open(output_file, 'w', newline='', encoding='utf-8') as outfile:
 
-    reader = csv.DictReader(infile)
-    fieldnames = ['source_ip', 'domain', 'category']
-    writer = csv.DictWriter(outfile, fieldnames=fieldnames)
-    writer.writeheader()
+        reader = csv.DictReader(infile)
+        fieldnames = ['source_ip', 'domain', 'category']
+        writer = csv.DictWriter(outfile, fieldnames=fieldnames)
+        writer.writeheader()
 
-    for row in reader:
-        domain = row.get('Domain', '').strip()
-        source_ip = row.get('Source IP', '').strip()
+        for row in reader:
+            domain = row.get('Domain', '').strip()
+            source_ip = row.get('Source IP', '').strip()
 
-        title = scraped_info.get(domain, '')
-        category = categorize(title, domain)
+            title = scraped_info.get(domain, '')
+            category = categorize(title, domain)
 
-        writer.writerow({
-            'source_ip': source_ip,
-            'domain': domain,
-            'category': category
-        })
+            writer.writerow({
+                'source_ip': source_ip,
+                'domain': domain,
+                'category': category
+            })
+
+if __name__ == '__main__':
+    main()
+
+def run():
+    main()
