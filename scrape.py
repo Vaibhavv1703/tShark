@@ -1,19 +1,22 @@
 import csv
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse
+import urllib3
+import os
 
-INPUT_CSV = 'captured.csv'
-OUTPUT_CSV = 'scraped_data.csv'
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+INPUT_CSV = 'data/captured.csv'
+OUTPUT_CSV = 'data/scraped_data.csv'
 
 def get_domain_url(domain):
-    # Ensure URL scheme (http://) for requests
     return f'https://{domain}'
 
 def scrape_domain(domain):
     url = get_domain_url(domain)
+    headers = {'User-Agent': 'Mozilla/5.0 (compatible; VaibhScraper/1.0)'}
     try:
-        resp = requests.get(url, timeout=5, verify=False)
+        resp = requests.get(url, timeout=10, verify=False, headers=headers)
         if resp.status_code != 200:
             return None
         soup = BeautifulSoup(resp.text, 'html.parser')
@@ -21,11 +24,11 @@ def scrape_domain(domain):
         description = ''
         keywords = ''
         for meta in soup.find_all('meta'):
-            if 'name' in meta.attrs:
-                if meta.attrs['name'].lower() == 'description':
-                    description = meta.attrs.get('content', '')
-                elif meta.attrs['name'].lower() == 'keywords':
-                    keywords = meta.attrs.get('content', '')
+            attr = meta.attrs.get('name', '').lower() or meta.attrs.get('property', '').lower()
+            if attr == 'description':
+                description = meta.attrs.get('content', '')
+            elif attr == 'keywords':
+                keywords = meta.attrs.get('content', '')
         return {
             'domain': domain,
             'title': title,
@@ -38,6 +41,9 @@ def scrape_domain(domain):
 
 
 def main():
+    if not os.path.exists('data'):
+        os.makedirs('data')
+
     domains = set()
     with open(INPUT_CSV, newline='') as f:
         reader = csv.DictReader(f)
@@ -54,10 +60,10 @@ def main():
         writer.writeheader()
 
         for domain in domains:
+            print(f"Scraping {domain}...")
             data = scrape_domain(domain)
             if data:
                 writer.writerow(data)
 
 if __name__ == '__main__':
     main()
-
