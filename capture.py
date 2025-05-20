@@ -41,15 +41,10 @@ def start_capture(duration_seconds=None):
                 if len(parts) == 3:
                     src_ip, domain, timestamp_str = parts
 
-                    try:
-                        dt = datetime.strptime(timestamp_str.split(" IST")[0], "%b %d, %Y %H:%M:%S.%f")
-                    except ValueError:
-                        dt = datetime.strptime(timestamp_str.split(" IST")[0], "%b %d, %Y %H:%M:%S")
-                    time_formatted = dt.strftime("%H:%M")
-
-                    writer.writerow([src_ip, domain, time_formatted])
+                    # Keep timestamp as is — no parsing or reformatting
+                    writer.writerow([src_ip, domain, timestamp_str])
                     file.flush()
-                    print(f"{src_ip} -> {domain} at {time_formatted}")
+                    print(f"{src_ip} -> {domain} at {timestamp_str}")
 
         except KeyboardInterrupt:
             print("\nCapture stopped by user.")
