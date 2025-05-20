@@ -1,6 +1,8 @@
 import subprocess
 import csv
 import os
+import sys
+import select
 from datetime import datetime
 
 INTERFACE = "eth0"
@@ -32,34 +34,39 @@ def start_capture(duration_seconds=None):
 
         try:
             start_time = datetime.now()
-            for line in iter(proc.stdout.readline, ''):
+
+            while True:
                 if duration_seconds and (datetime.now() - start_time).total_seconds() > duration_seconds:
                     print(f"\nCapture time limit reached ({duration_seconds} seconds). Stopping capture.")
                     break
 
-                parts = line.strip().split('\t')
-                if len(parts) == 3:
-                    src_ip, domain, timestamp_str = parts
+                ready, _, _ = select.select([proc.stdout], [], [], 1.0)
+                if ready:
+                    line = proc.stdout.readline()
+                    if not line:
+                        break
 
-                    # Keep timestamp as is — no parsing or reformatting
-                    writer.writerow([src_ip, domain, timestamp_str])
-                    file.flush()
-                    print(f"{src_ip} -> {domain} at {timestamp_str}")
+                    parts = line.strip().split('\t')
+                    if len(parts) == 3:
+                        src_ip, domain, timestamp_str = parts
+                        writer.writerow([src_ip, domain, timestamp_str])
+                        file.flush()
+                        print(f"{src_ip} -> {domain} at {timestamp_str}")
 
         except KeyboardInterrupt:
             print("\nCapture stopped by user.")
-
         finally:
             proc.terminate()
 
 if __name__ == "__main__":
     if os.geteuid() != 0:
         print("Run this script with sudo.")
-    else:
-        try:
-            duration = int(input("Enter capture duration in seconds (0 for unlimited): "))
-            duration = None if duration == 0 else duration
-        except ValueError:
-            duration = None
+        sys.exit(1)
 
-        start_capture(duration_seconds=duration)
+    try:
+        duration = int(input("Enter capture duration in seconds (0 for unlimited): "))
+        duration = None if duration == 0 else duration
+    except ValueError:
+        duration = None
+
+    start_capture(duration_seconds=duration)
