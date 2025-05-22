@@ -35,6 +35,14 @@ def contact():
     print("||{:^96}||".format("GitHub: https://github.com/Vaibhavv1703"))
     print("=" * 100 + "\n")
 
+def data_folder():
+    path = 'data'
+    if not os.path.exists(path):
+        os.makedirs(path)
+        print("Data folder created.")
+    else:
+        print("Data folder already exists.")
+
 
 def main():
     valid_choices = {'0', '1', '2', '3'}
@@ -54,6 +62,8 @@ def main():
             break
         elif ch == '1':
             cls()
+            data_folder()
+
             import capture
             print("Starting capture...")
             capture.run()
